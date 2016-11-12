@@ -25,7 +25,10 @@ class Property extends Model
      *
      */
     public function property_facilities()
+
     {
-        return $this->hasMany('App\Property');
+        return $this->hasMany('App\PropertyFacilities', 'id_property', 'id');
     }
+
+
 }

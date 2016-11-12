@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Property;
+use App\PropertyFacilities;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
@@ -40,18 +42,24 @@ class PropertyController extends Controller
         if($validator instanceof JsonResponse)
             return $validator;
 
-        $property = new Property();
+        $property = new Property(); //intance model Property
         $property->title = $request->input('title');
         $property->description = $request->input('description');
         $property->address = $request->input('address');
         $property->town = $request->input('town');
         $property->country = $request->input('country');
         $property->state_id = $request->input('state_id');
-        $property->user_id = $request->input('user_id');
+        $property->user_id = 1; //Auth::id();
         $property->created_at = Carbon::now();
         $property->updated_at = Carbon::now();
 
-        $property->save();
+        $property->save(); //save property
+
+        //relationship save property_facilities
+        $propertyFacilities = $property->property_facilities()->create([
+            'id_property' => $property->id,
+            'id_facility' => $request->input('id_facility')
+        ]);
 
         return Response::json([
             'data' => 'save'
@@ -67,7 +75,25 @@ class PropertyController extends Controller
     public function show($id)
     {
         //
+
         $property = Property::find($id);
+        $test = $property->property_facilities()->where('id_property', $property->id)->first();
+        //$property->property_facilities()->property_facilities;
+        //$property->property_facilities()->id_facility;
+        //$property->property_facilities()->id_property;
+        //$propertyFacilities = $property->property_facilities;
+
+        dd($test);
+        //$propertyFacilities = $property->property_facilities()->where('id_property', $property->id)->get();
+
+
+
+
+
+
+        //$property->property_facilities()->where('id_property', $property->id)->get();
+
+        dd($property);
         return Response::json([
             'data' => $property
         ], 200);
