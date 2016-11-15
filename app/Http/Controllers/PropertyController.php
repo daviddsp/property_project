@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
@@ -21,7 +22,10 @@ class PropertyController extends Controller
     public function index()
     {
         //
-        $property = Property::all();
+        $property = DB::table('property')
+            ->orderBy('id', 'desc')
+            ->get();
+        // $property = Property::all()->reverse('id');
         return response()->json([
             'data' => $property
         ]);
@@ -49,7 +53,7 @@ class PropertyController extends Controller
         $property->town = $request->input('town');
         $property->country = $request->input('country');
         $property->state_id = $request->input('state_id');
-        $property->user_id = 1; //Auth::id();
+        $property->user_id = $request->input('user_id'); //Auth::id();
         $property->created_at = Carbon::now();
         $property->updated_at = Carbon::now();
 
@@ -60,10 +64,8 @@ class PropertyController extends Controller
             'id_property' => $property->id,
             'id_facility' => $request->input('id_facility')
         ]);
+        return response()->json(['data' => 'save'], 201);
 
-        return Response::json([
-            'data' => 'save'
-        ], 201);
     }
 
     /**
@@ -130,9 +132,8 @@ class PropertyController extends Controller
         $property = Property::find($id);
         $property->delete();
 
-        return Response::json([
-            'data' => $property
-        ], 200);
+        return response()->json(['data' => 'delete'], 200);
+
 
     }
 
